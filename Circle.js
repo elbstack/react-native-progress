@@ -44,7 +44,7 @@ export class ProgressCircle extends Component {
     showsText: PropTypes.bool,
     size: PropTypes.number,
     style: RNViewPropTypes.style,
-    textStyle: Proptypes.any,
+    textStyle: PropTypes.any,
     thickness: PropTypes.number,
     unfilledColor: PropTypes.string,
   };
