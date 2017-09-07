@@ -44,7 +44,7 @@ export class ProgressCircle extends Component {
     showsText: PropTypes.bool,
     size: PropTypes.number,
     style: RNViewPropTypes.style,
-    textStyle: Text.propTypes.style,
+    textStyle: Proptypes.any,
     thickness: PropTypes.number,
     unfilledColor: PropTypes.string,
   };
@@ -177,15 +177,11 @@ export class ProgressCircle extends Component {
               justifyContent: 'center',
             }}
           >
-            <Text
-              style={[{
-                color,
-                fontSize: textSize / 4.5,
-                fontWeight: '300',
-              }, textStyle]}
+            <View
+              style={textStyle}
             >
               {formatText(progressValue)}
-            </Text>
+            </View>
           </View>
         ) : false}
         {children}
