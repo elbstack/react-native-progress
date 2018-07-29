@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Animated,
-  ART,
-  StyleSheet,
-  Text,
-  View,
-  ViewPropTypes,
-} from 'react-native';
+import { Animated, ART, StyleSheet, Text, View } from 'react-native';
 
 import Arc from './Shapes/Arc';
 import withAnimation from './withAnimation';
@@ -16,8 +9,6 @@ const CIRCLE = Math.PI * 2;
 
 const AnimatedSurface = Animated.createAnimatedComponent(ART.Surface);
 const AnimatedArc = Animated.createAnimatedComponent(Arc);
-
-const RNViewPropTypes = ViewPropTypes || View.propTypes;
 
 const styles = StyleSheet.create({
   container: {
@@ -43,10 +34,12 @@ export class ProgressCircle extends Component {
     rotation: PropTypes.instanceOf(Animated.Value),
     showsText: PropTypes.bool,
     size: PropTypes.number,
-    style: RNViewPropTypes.style,
+    style: PropTypes.any,
+    strokeCap: PropTypes.oneOf(['butt', 'square', 'round']),
     textStyle: PropTypes.any,
     thickness: PropTypes.number,
     unfilledColor: PropTypes.string,
+    endAngle: PropTypes.number,
   };
 
   static defaultProps = {
@@ -58,6 +51,7 @@ export class ProgressCircle extends Component {
     showsText: false,
     size: 40,
     thickness: 3,
+    endAngle: 0.9,
   };
 
   constructor(props, context) {
@@ -68,7 +62,7 @@ export class ProgressCircle extends Component {
 
   componentWillMount() {
     if (this.props.animated) {
-      this.props.progress.addListener((event) => {
+      this.props.progress.addListener(event => {
         this.progressValue = event.value;
         if (this.props.showsText || this.progressValue === 1) {
           this.forceUpdate();
@@ -96,23 +90,26 @@ export class ProgressCircle extends Component {
       textStyle,
       thickness,
       unfilledColor,
+      endAngle,
       ...restProps
     } = this.props;
 
     const border = borderWidth || (indeterminate ? 1 : 0);
 
-    const radius = (size / 2) - border;
+    const radius = size / 2 - border;
     const offset = {
       top: border,
       left: border,
     };
     const textOffset = border + thickness;
-    const textSize = size - (textOffset * 2);
+    const textSize = size - textOffset * 2;
 
     const Surface = rotation ? AnimatedSurface : ART.Surface;
     const Shape = animated ? AnimatedArc : Arc;
     const progressValue = animated ? this.progressValue : progress;
-    const angle = animated ? Animated.multiply(progress, CIRCLE) : progress * CIRCLE;
+    const angle = animated
+      ? Animated.multiply(progress, CIRCLE)
+      : progress * CIRCLE;
 
     return (
       <View style={[styles.container, style]} {...restProps}>
@@ -120,14 +117,17 @@ export class ProgressCircle extends Component {
           width={size}
           height={size}
           style={{
-            transform: [{
-              rotate: indeterminate && rotation
-                ? rotation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '360deg'],
-                })
-                : '0deg',
-            }],
+            transform: [
+              {
+                rotate:
+                  indeterminate && rotation
+                    ? rotation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0deg', '360deg'],
+                      })
+                    : '0deg',
+              },
+            ],
           }}
         >
           {unfilledColor && progressValue !== 1 ? (
@@ -140,7 +140,9 @@ export class ProgressCircle extends Component {
               stroke={unfilledColor}
               strokeWidth={thickness}
             />
-          ) : false}
+          ) : (
+            false
+          )}
           {!indeterminate ? (
             <Shape
               radius={radius}
@@ -152,17 +154,21 @@ export class ProgressCircle extends Component {
               strokeCap={strokeCap}
               strokeWidth={thickness}
             />
-          ) : false}
+          ) : (
+            false
+          )}
           {border ? (
             <Arc
               radius={size / 2}
               startAngle={0}
-              endAngle={(indeterminate ? 1.8 : 2) * Math.PI}
+              endAngle={(indeterminate ? endAngle * 2 : 2) * Math.PI}
               stroke={borderColor || color}
               strokeCap={strokeCap}
               strokeWidth={border}
             />
-          ) : false}
+          ) : (
+            false
+          )}
         </Surface>
         {!indeterminate && showsText ? (
           <View
@@ -177,13 +183,22 @@ export class ProgressCircle extends Component {
               justifyContent: 'center',
             }}
           >
-            <View
-              style={textStyle}
+            <Text
+              style={[
+                {
+                  color,
+                  fontSize: textSize / 4.5,
+                  fontWeight: '300',
+                },
+                textStyle,
+              ]}
             >
               {formatText(progressValue)}
             </View>
           </View>
-        ) : false}
+        ) : (
+          false
+        )}
         {children}
       </View>
     );
