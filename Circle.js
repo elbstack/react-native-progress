@@ -79,6 +79,7 @@ export class ProgressCircle extends Component {
       color,
       children,
       direction,
+      fill,
       formatText,
       indeterminate,
       progress,
@@ -171,7 +172,7 @@ export class ProgressCircle extends Component {
           )}
         </Surface>
         {!indeterminate && showsText ? (
-          <View
+          <Text
             style={{
               position: 'absolute',
               left: textOffset,
@@ -194,8 +195,8 @@ export class ProgressCircle extends Component {
               ]}
             >
               {formatText(progressValue)}
-            </View>
-          </View>
+            </Text>
+          </Text>
         ) : (
           false
         )}
