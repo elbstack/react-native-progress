@@ -25,6 +25,7 @@ export class ProgressCircle extends Component {
     color: PropTypes.string,
     children: PropTypes.node,
     direction: PropTypes.oneOf(['clockwise', 'counter-clockwise']),
+    fill: PropTypes.string,
     formatText: PropTypes.func,
     indeterminate: PropTypes.bool,
     progress: PropTypes.oneOfType([
@@ -133,6 +134,7 @@ export class ProgressCircle extends Component {
         >
           {unfilledColor && progressValue !== 1 ? (
             <Shape
+              fill={fill}
               radius={radius}
               offset={offset}
               startAngle={angle}
@@ -146,6 +148,7 @@ export class ProgressCircle extends Component {
           )}
           {!indeterminate ? (
             <Shape
+              fill={fill}
               radius={radius}
               offset={offset}
               startAngle={0}
